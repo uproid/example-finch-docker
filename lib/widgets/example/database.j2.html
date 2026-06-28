@@ -1,0 +1,191 @@
+{% extends 'template/template.j2.html' %}
+{% block title %}
+  {{ $t('sidebar.mongo') }}
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  {# ============== HERO ============== #}
+  <section class="reveal-up relative overflow-hidden rounded-3xl border border-zinc-200 bg-gradient-to-br from-zinc-900 via-emerald-950 to-green-950 p-6 sm:p-8 shadow-soft">
+    <div class="pointer-events-none absolute -top-24 -end-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-24 -start-24 h-72 w-72 rounded-full bg-green-500/20 blur-3xl"></div>
+
+    <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex items-start gap-4">
+        <div class="relative">
+          <div class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur">
+            <i class="fa-solid fa-leaf text-2xl text-emerald-300"></i>
+          </div>
+          <span class="absolute -top-1 -end-1 inline-flex h-3.5 w-3.5">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex h-3.5 w-3.5 rounded-full bg-green-400 ring-2 ring-zinc-900"></span>
+          </span>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-400/30">
+              <i class="fa-solid fa-bolt"></i>
+              MongoDB
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-zinc-300 ring-1 ring-white/10">
+              <i class="fa-solid fa-cubes text-green-300"></i>
+              Document
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-zinc-300 ring-1 ring-white/10">
+              <i class="fa-solid fa-code text-cyan-300"></i>
+              NoSQL
+            </span>
+          </div>
+          <h1 class="mt-2 text-2xl font-bold text-white sm:text-3xl">{{ $t('database.test.title') }}</h1>
+          <p class="mt-1 max-w-xl text-sm text-zinc-300">
+            MongoDB example with CRUD operations — flexible, schemaless documents with title and auto-generated slug.
+          </p>
+        </div>
+      </div>
+
+      {# Quick stats #}
+      <div class="grid grid-cols-2 gap-3 sm:flex sm:items-stretch">
+        <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Records</div>
+          <div class="mt-1 flex items-baseline gap-1.5">
+            <span class="text-2xl font-bold text-white">{{ (allRecords | default([])) | length }}</span>
+            <span class="text-[11px] text-zinc-400">/ page</span>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Page</div>
+          <div class="mt-1 flex items-baseline gap-1.5">
+            <span class="text-2xl font-bold text-white">{{ data.page if data.page else 1 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ============== RECORDS CARD ============== #}
+  <section class="reveal-up overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-soft">
+    {# Header band #}
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-gradient-to-r from-zinc-50 to-white px-5 py-4">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-sm">
+          <i class="fa-solid fa-database"></i>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-zinc-800 leading-tight">Documents</p>
+          <p class="text-[11px] text-zinc-500">Collection · title and slug</p>
+        </div>
+      </div>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        Live
+      </span>
+    </div>
+
+    {# Table #}
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-zinc-200 text-xs md:text-sm">
+        <thead class="bg-zinc-50">
+          <tr class="text-left">
+            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('database.table.header.title') }}</th>
+            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('database.table.header.slug') }}</th>
+            <th class="px-5 py-3 text-end text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('database.table.header.action') }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-100 bg-white">
+          {% for record in allRecords %}
+          <tr class="group transition hover:bg-emerald-50/40">
+            <td class="px-5 py-3 align-middle">
+              <div class="flex items-center gap-2.5">
+                <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-sm">
+                  <i class="fa-solid fa-file-lines text-[11px]"></i>
+                </span>
+                <span class="font-semibold text-zinc-800">{{ record.title }}</span>
+              </div>
+            </td>
+            <td class="px-5 py-3">
+              <code class="inline-flex items-center gap-1.5 rounded-md bg-zinc-100 px-2 py-1 font-mono text-[11px] text-zinc-700 ring-1 ring-zinc-200">
+                <i class="fa-solid fa-link text-[9px] text-zinc-400"></i>
+                {{ record.slug }}
+              </code>
+            </td>
+            <td class="px-5 py-3 text-end">
+              <a
+                href="/example/database?page={{ data.page if data.page else 1 }}&action=delete&id={{ record.id }}"
+                class="wave inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500/30"
+                title="{{ $t('database.table.header.action') }}">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="3" class="px-5 py-16 text-center">
+              <div class="mx-auto flex max-w-sm flex-col items-center gap-3">
+                <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-400">
+                  <i class="fa-solid fa-folder-open text-2xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-zinc-700">{{ $t('database.table.empty') if $t('database.table.empty') else $t('No records found') }}</p>
+                <p class="text-xs text-zinc-500">Insert your first document using the form below.</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Add document form + pagination #}
+    <div class="space-y-4 border-t border-zinc-200 bg-zinc-50/60 p-5">
+      <form method="post" class="rounded-xl border border-dashed border-zinc-300 bg-white p-4">
+        <input type="hidden" name="action" value="add" />
+        <div class="mb-3 flex items-center gap-2">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-sm">
+            <i class="fa-solid fa-plus text-[11px]"></i>
+          </span>
+          <p class="text-xs font-semibold text-zinc-700">
+            {{ $t('database.table.button.add') }}
+            <span class="font-normal text-zinc-500">·</span>
+            <span class="font-normal text-zinc-500">New document</span>
+          </p>
+        </div>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-start">
+          <div class="flex-1">
+            <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              {{ $t('database.table.header.title') }}
+            </label>
+            <div class="relative">
+              <span class="pointer-events-none absolute inset-y-0 start-3 flex items-center text-zinc-400">
+                <i class="fa-solid fa-heading text-xs"></i>
+              </span>
+              <input
+                type="text"
+                name="title"
+                placeholder="{{ $t('database.table.input.placeholder.title') }}"
+                class="block h-10 w-full rounded-lg border border-zinc-200 bg-white ps-9 pe-3 text-xs shadow-sm transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+              />
+            </div>
+          </div>
+          <div class="sm:pt-[22px]">
+            <button
+              type="submit"
+              class="wave inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-green-600 px-4 text-xs font-semibold text-white shadow-sm transition hover:from-emerald-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 sm:w-auto"
+            >
+              <i class="fa-solid fa-plus"></i>
+              <span>{{ $t('database.table.button.add') }}</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      {% if pagination %}
+      <div class="flex items-center justify-center pt-1">
+        <div class="pagination-wrapper text-sm text-zinc-600">
+          {{ pagination }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

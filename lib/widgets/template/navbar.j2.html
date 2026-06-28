@@ -1,0 +1,100 @@
+<nav id="navbar"
+     class="fixed inset-x-0 top-0 z-50 h-16 border-b border-zinc-200 bg-white">
+  <div class="flex h-full w-full items-center">
+
+    <!-- ============ BRAND ZONE (aligned with sidebar width on lg) ============ -->
+    <div class="flex h-full w-[240px] shrink-0 items-center gap-2 border-zinc-200 px-4 lg:border-e">
+      <!-- Mobile-only sidebar toggle -->
+      <button
+        type="button"
+        class="wave button-sidebar inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-teal-500/40 lg:hidden"
+        aria-label="{{ $t('navbar.toggleSidebar') }}"
+        aria-controls="sidebar"
+        aria-expanded="false"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Logo -->
+      <a class="wave inline-flex items-center gap-2.5 rounded-lg px-1.5 py-1 hover:bg-zinc-50"
+         href="{{ $e.routeUrl('root.home') }}">
+        <img src="{{ $e.url('logo.svg') }}" alt="{{ $t('logo.title') }}" class="h-9 w-9 shrink-0" />
+        <span class="flex items-baseline gap-1.5">
+          <span class="text-lg font-extrabold tracking-tight text-zinc-900">{{ $t('logo.title') }}</span>
+          <span class="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-zinc-500 ring-1 ring-inset ring-zinc-200">{{ version }}</span>
+        </span>
+      </a>
+    </div>
+
+    <!-- ============ RIGHT ZONE ============ -->
+    <div class="flex h-full flex-1 items-center justify-end gap-2 px-4 sm:px-6">
+
+      {% if middleware %}
+        <span class="hidden md:inline-flex items-center gap-1.5 rounded-md bg-teal-50 px-2 py-1 text-[11px] font-semibold text-teal-700 ring-1 ring-inset ring-teal-200">
+          <i class="fa-solid fa-shield-halved text-[10px]"></i>{{ middleware }}
+        </span>
+      {% endif %}
+
+      <!-- GitHub -->
+      <a href="https://github.com/uproid/finch"
+         class="wave inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400/40"
+         aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+
+      {% if user %}
+      <!-- User menu -->
+      <details class="group relative">
+        <summary class="list-none inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-teal-500/40">
+          <span class="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-teal-500 to-cyan-500 text-white">
+            <i class="fas fa-user text-[11px]"></i>
+          </span>
+          <span class="hidden md:block max-w-[120px] truncate">{{ user.name }}</span>
+          <i class="text-zinc-400 text-xs fas fa-chevron-down transition-transform duration-200 group-open:rotate-180"></i>
+        </summary>
+        <ul class="absolute end-0 mt-2 w-60 overflow-hidden rounded-xl border border-zinc-200 bg-white py-1.5 shadow-soft-lg">
+          <li class="px-3 pb-2 pt-1 mb-1 border-b border-zinc-100">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Account</div>
+            <div class="mt-0.5 truncate text-sm font-semibold text-zinc-900">{{ user.name }}</div>
+          </li>
+          <li>
+            <a class="wave flex items-center gap-3 mx-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50"
+               href="{{ $e.routeUrl('root.logout') }}">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-rose-100 text-rose-600">
+                <i class="fas fa-sign-out-alt text-xs"></i>
+              </span>
+              <span>{{ $t('auth.logout') }}</span>
+            </a>
+          </li>
+        </ul>
+      </details>
+      {% endif %}
+
+      <!-- Language switcher -->
+      <details class="group relative">
+        <summary class="list-none inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-teal-500/40">
+          <i class="text-teal-600 text-sm fas fa-globe text-[11px]"></i>
+          <span class="hidden md:block">{{ $e.ln | upper }}</span>
+          <i class="text-zinc-400 text-xs fas fa-chevron-down transition-transform duration-200 group-open:rotate-180"></i>
+        </summary>
+        <ul class="absolute end-0 mt-2 w-56 max-h-80 overflow-y-auto rounded-xl border border-zinc-200 bg-white py-1.5 shadow-soft-lg">
+          <li class="px-3 pb-2 pt-1 mb-1 border-b border-zinc-100">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Language</div>
+          </li>
+          {% for key, language in languages %}
+          <li>
+            <a class="wave flex items-center gap-3 mx-1.5 rounded-lg px-2.5 py-2 text-sm transition-colors {{ 'bg-teal-50 font-semibold text-teal-700' if $e.ln == key else 'text-zinc-700 hover:bg-zinc-50' }}"
+               href="{{ $e.urlToLanguage(key) }}">
+              <img src="{{ language.flag }}" class="h-5 w-6 rounded-sm object-cover ring-1 ring-zinc-200" alt=""/>
+              <span class="flex-1">{{ language.name }}</span>
+              {% if $e.ln == key %}
+              <i class="text-teal-600 text-xs fas fa-check"></i>
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </details>
+    </div>
+  </div>
+</nav>
