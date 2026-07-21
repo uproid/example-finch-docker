@@ -1,0 +1,240 @@
+{% extends 'template/template.j2.html' %}
+{% block title %}
+  {{ $t('Example Free model DB') }}
+{% endblock %}
+
+{% block content %}
+{% set isEditing = ($n('data/_id') != '') %}
+
+<div class="space-y-6">
+
+  {# ============== HERO ============== #}
+  <section class="reveal-up relative overflow-hidden rounded-3xl border border-zinc-200 bg-gradient-to-br from-zinc-900 via-violet-950 to-fuchsia-950 p-6 sm:p-8 shadow-soft">
+    <div class="pointer-events-none absolute -top-24 -end-24 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-24 -start-24 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
+
+    <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex items-start gap-4">
+        <div class="relative">
+          <div class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur">
+            <i class="fa-solid fa-user-group text-2xl text-violet-300"></i>
+          </div>
+          <span class="absolute -top-1 -end-1 inline-flex h-3.5 w-3.5">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-fuchsia-400 opacity-75"></span>
+            <span class="relative inline-flex h-3.5 w-3.5 rounded-full bg-fuchsia-400 ring-2 ring-zinc-900"></span>
+          </span>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-violet-300 ring-1 ring-violet-400/30">
+              <i class="fa-solid fa-bolt"></i>
+              Free Model
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-zinc-300 ring-1 ring-white/10">
+              <i class="fa-solid fa-database text-fuchsia-300"></i>
+              Schemaless
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-zinc-300 ring-1 ring-white/10">
+              <i class="fa-solid fa-list-check text-cyan-300"></i>
+              Validated
+            </span>
+          </div>
+          <h1 class="mt-2 text-2xl font-bold text-white sm:text-3xl">{{ $t('person.example.title') }}</h1>
+          <p class="mt-1 max-w-xl text-sm text-zinc-300">
+            Free model database example — store persons with arbitrary fields, validated forms and inline CRUD.
+          </p>
+        </div>
+      </div>
+
+      {# Quick stats / actions #}
+      <div class="flex flex-wrap items-stretch gap-3">
+        <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Persons</div>
+          <div class="mt-1 flex items-baseline gap-1.5">
+            <span class="text-2xl font-bold text-white">{{ (allPerson | default([])) | length }}</span>
+            <span class="text-[11px] text-zinc-400">/ page</span>
+          </div>
+        </div>
+        {% if isEditing %}
+        <a href="/example/persons" class="group inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white backdrop-blur transition hover:border-white/20 hover:bg-white/10">
+          <i class="fa-solid fa-arrow-left-long transition group-hover:-translate-x-0.5"></i>
+          Back to list
+        </a>
+        {% else %}
+        <a href="#person-form" class="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-violet-700 shadow-sm transition hover:bg-zinc-100">
+          <i class="fa-solid fa-plus"></i>
+          Add person
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% if not isEditing %}
+  {# ============== PERSONS LIST CARD ============== #}
+  <section class="reveal-up overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-soft">
+    {# Header band #}
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-gradient-to-r from-zinc-50 to-white px-5 py-4">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-sm">
+          <i class="fa-solid fa-address-book"></i>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-zinc-800 leading-tight">{{ $t('person.example.title') }}</p>
+          <p class="text-[11px] text-zinc-500">Profile · contacts · skills</p>
+        </div>
+      </div>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-200">
+        <i class="fa-solid fa-users text-[10px]"></i>
+        {{ (allPerson | default([])) | length }} on this page
+      </span>
+    </div>
+
+    {# Table #}
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-zinc-200 text-xs md:text-sm">
+        <thead class="bg-zinc-50">
+          <tr class="text-left">
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.name') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.age') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.married') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.email') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.height') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.birthday') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.job') }}</th>
+            <th class="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.skills') }}</th>
+            <th class="px-4 py-3 text-end text-[11px] font-bold uppercase tracking-wider text-zinc-600">{{ $t('person.table.header.action') }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-100 bg-white">
+          {% for person in allPerson %}
+          {% set initial = (person.name | default('?')) | upper | first %}
+          <tr class="group transition hover:bg-violet-50/40">
+            <td class="px-4 py-3 align-middle">
+              <div class="flex items-center gap-3">
+                <span class="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm ring-2 ring-white" style="background-color: {{ person.color }};">
+                  {{ initial }}
+                  <span class="absolute -bottom-0.5 -end-0.5 inline-block h-2.5 w-2.5 rounded-full ring-2 ring-white" style="background-color: {{ person.color }};"></span>
+                </span>
+                <div class="min-w-0">
+                  <p class="truncate font-semibold text-zinc-800">{{ person.name }}</p>
+                  <p class="truncate text-[11px] text-zinc-500">
+                    <i class="fa-regular fa-envelope text-zinc-400"></i>
+                    {{ person.email }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center gap-1.5 rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-zinc-700">
+                {{ person.age }}
+                <span class="text-[10px] font-normal text-zinc-500">yr</span>
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              {% if person.married == 'yes' or person.married == true or person.married == 'true' %}
+                <span class="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-semibold text-rose-700 ring-1 ring-rose-200">
+                  <i class="fa-solid fa-heart text-[9px]"></i>
+                  {{ $t('person.form.gender.dont_ask') ? $t('person.table.header.married') : 'Yes' }}
+                </span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-semibold text-zinc-600 ring-1 ring-zinc-200">
+                  <i class="fa-regular fa-heart text-[9px]"></i>
+                  {{ person.married | default('—') }}
+                </span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 text-zinc-600">
+              <span class="truncate">{{ person.email }}</span>
+            </td>
+            <td class="px-4 py-3 text-zinc-600">
+              <span class="inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-ruler-vertical text-zinc-400"></i>
+                {{ person.height }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-zinc-600">
+              <span class="inline-flex items-center gap-1.5">
+                <i class="fa-regular fa-calendar text-zinc-400"></i>
+                {{ person.birthday | dateFormat('dd/MM/yyyy') }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 ring-1 ring-cyan-200">
+                <i class="fa-solid fa-briefcase text-[10px]"></i>
+                {{ person.job.title | default('—') }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-200">
+                <i class="fa-solid fa-bolt-lightning text-[9px]"></i>
+                {{ person.jobs|length }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-end">
+              <div class="flex items-center justify-end gap-1.5">
+                <a href="/example/person/{{ person._id }}" class="wave inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-teal-600 transition hover:border-teal-300 hover:bg-teal-50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30" title="{{ $t('Edit') }}">
+                  <i class="fa-solid fa-pen-to-square text-xs"></i>
+                </a>
+                <form onsubmit="return confirm('{{ $t('Are you sure to delete') }} `{{ person.name }}`?')" action="/example/person/delete/{{ person._id }}" method="POST" class="inline">
+                  <input type="hidden" name="action" value="DELETE" />
+                  <button type="submit" class="wave inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500/30" title="{{ $t('Delete') }}">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="100%" class="px-4 py-16 text-center">
+              <div class="mx-auto flex max-w-sm flex-col items-center gap-3">
+                <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-400">
+                  <i class="fa-solid fa-user-plus text-2xl"></i>
+                </div>
+                <p class="text-sm font-semibold text-zinc-700">{{ $t('person.table.empty') }}</p>
+                <p class="text-xs text-zinc-500">Use the form below to add your first person.</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="border-t border-zinc-200 bg-zinc-50/60">
+          <tr>
+            <td colspan="100%" class="px-4 py-3 text-sm text-zinc-700">
+              {{ paging }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ============== PERSON FORM CARD ============== #}
+  <section id="person-form" class="reveal-up overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-soft">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-gradient-to-r from-violet-50 to-fuchsia-50 px-5 py-4">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-sm">
+          <i class="fa-solid {{ 'fa-user-pen' if isEditing else 'fa-user-plus' }}"></i>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-zinc-800 leading-tight">
+            {{ 'Edit person' if isEditing else 'Add new person' }}
+          </p>
+          <p class="text-[11px] text-zinc-500">All fields are validated server-side</p>
+        </div>
+      </div>
+      {% if isEditing %}
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200">
+        <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+        Editing
+      </span>
+      {% endif %}
+    </div>
+    <div class="p-5 sm:p-6">
+      {% include $e.widgetPath('example/forms/form_person') %}
+    </div>
+  </section>
+</div>
+{% endblock %}
