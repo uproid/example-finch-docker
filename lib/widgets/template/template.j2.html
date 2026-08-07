@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="{{ $e.ln }}" dir="{{ $t('dir') }}" class="h-full scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{% endblock %} | {{ $t(title) }}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0d9488" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/assets/effects/wave/wave.css" />
+  <link rel="stylesheet" href="/assets/generated-tailwind.css" />
+  <link rel="stylesheet" href="/assets/app.css" crossorigin="anonymous" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <style>
+    html, body {
+      font-family: 'Rubik', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    body { font-feature-settings: "cv11","ss01","ss03"; }
+
+    /* Subtle scrollbar */
+    *::-webkit-scrollbar { width: 10px; height: 10px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb {
+      background: #d4d4d8; /* zinc-300 */
+      border-radius: 9999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    *::-webkit-scrollbar-thumb:hover { background: #14b8a6; background-clip: padding-box; }
+
+    /* Reveal animation */
+    @keyframes reveal-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal-up { animation: reveal-up .35s ease-out both; }
+
+    /* Brand gradient text — high contrast on white */
+    .text-gradient-brand {
+      background: linear-gradient(90deg, #0f766e 0%, #0891b2 55%, #047857 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Soft elevation tokens */
+    .shadow-soft   { box-shadow: 0 1px 2px rgba(24,24,27,.04), 0 1px 3px rgba(24,24,27,.06); }
+    .shadow-soft-lg{ box-shadow: 0 4px 10px -2px rgba(24,24,27,.06), 0 10px 30px -10px rgba(24,24,27,.12); }
+  </style>
+  {% block stylesheets %}
+  {{ assets.css() }}
+  {% endblock %}
+</head>
+
+<body class="h-full min-h-screen bg-zinc-50 text-zinc-800 font-sans antialiased selection:bg-teal-200 selection:text-teal-900">
+
+  {% block navbar %}
+  {% include 'template/navbar.j2.html' %}
+  {% endblock %}
+
+  <div class="flex min-h-screen w-full">
+    {% block sidebar %}
+    {% include 'template/sidebar.j2.html' %}
+    {% endblock %}
+
+    <!-- Main column -->
+    <div class="flex flex-1 min-w-0 flex-col lg:ms-[280px]">
+      <main class="flex-1 px-4 pt-20 pb-10 sm:px-6 lg:px-10 lg:pt-24">
+        <div class="mx-auto w-full max-w-7xl reveal-up">
+
+          {% block flash %}
+          {% if $l.hasFlash() %}
+          <div class="mb-6 space-y-3">
+          {% for flash in $l.getFlashs() %}
+          <div role="alert"
+               class="relative flex items-start gap-3 overflow-hidden rounded-xl border p-4 text-sm shadow-soft
+               {% if flash.type == 'success' %} border-emerald-200 bg-emerald-50 text-emerald-900 {% endif %}
+               {% if flash.type == 'info' %} border-sky-200 bg-sky-50 text-sky-900 {% endif %}
+               {% if flash.type == 'warning' %} border-amber-200 bg-amber-50 text-amber-900 {% endif %}
+               {% if flash.type == 'danger' ?? flash.type == 'error' %} border-rose-200 bg-rose-50 text-rose-900 {% endif %}
+               {% if flash.type != 'success' and flash.type != 'info' and flash.type != 'warning' and flash.type != 'danger' and flash.type != 'error' %} border-zinc-200 bg-white text-zinc-900 {% endif %}">
+            <span class="pointer-events-none absolute inset-y-0 start-0 w-1
+              {% if flash.type == 'success' %} bg-emerald-500 {% endif %}
+              {% if flash.type == 'info' %} bg-sky-500 {% endif %}
+              {% if flash.type == 'warning' %} bg-amber-500 {% endif %}
+              {% if flash.type == 'danger' ?? flash.type == 'error' %} bg-rose-500 {% endif %}
+              {% if flash.type != 'success' and flash.type != 'info' and flash.type != 'warning' and flash.type != 'danger' and flash.type != 'error' %} bg-zinc-400 {% endif %}"></span>
+            <span class="ms-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg
+              {% if flash.type == 'success' %} bg-emerald-100 text-emerald-700 {% endif %}
+              {% if flash.type == 'info' %} bg-sky-100 text-sky-700 {% endif %}
+              {% if flash.type == 'warning' %} bg-amber-100 text-amber-700 {% endif %}
+              {% if flash.type == 'danger' ?? flash.type == 'error' %} bg-rose-100 text-rose-700 {% endif %}
+              {% if flash.type != 'success' and flash.type != 'info' and flash.type != 'warning' and flash.type != 'danger' and flash.type != 'error' %} bg-zinc-100 text-zinc-600 {% endif %}">
+              {% if flash.type == 'success' %}
+              <i class="text-lg fa-solid fa-check"></i>
+              {% elif flash.type == 'info' %}
+              <i class="text-lg fa-solid fa-info"></i>
+              {% elif flash.type == 'warning' %}
+              <i class="text-lg fa-solid fa-exclamation-triangle"></i>
+              {% else %}
+              <i class="text-lg fa-solid fa-circle-exclamation"></i>
+              {% endif %}
+            </span>
+            <span class="flex-1 pt-1.5 font-medium leading-relaxed">{{ flash.text }}</span>
+          </div>
+          {% endfor %}
+          </div>
+          {% endif %}
+          {% endblock %}
+
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+
+      {% block footer %}
+      {% include 'template/footer.j2.html' %}
+      {% endblock %}
+    </div>
+  </div>
+
+  <!-- Mobile sidebar backdrop -->
+  <div id="sidebar-backdrop"
+       class="fixed inset-0 z-30 hidden bg-zinc-900/50 backdrop-blur-sm transition-opacity duration-200 lg:hidden"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var toggle = document.querySelector('.button-sidebar');
+      var sidebar = document.getElementById('sidebar');
+      var backdrop = document.getElementById('sidebar-backdrop');
+      if (!toggle || !sidebar) return;
+
+      var htmlDir = document.documentElement.getAttribute('dir') || 'ltr';
+      var isRTL = htmlDir === 'rtl';
+      var lgQuery = window.matchMedia('(min-width: 1024px)');
+      var closedClass = isRTL ? 'translate-x-full' : '-translate-x-full';
+
+      function setSidebarOpen(open) {
+        var large = lgQuery.matches;
+        if (open) {
+          sidebar.classList.remove(closedClass);
+          sidebar.dataset.state = 'open';
+          sidebar.setAttribute('aria-hidden', 'false');
+          toggle.setAttribute('aria-expanded', 'true');
+          if (!large && backdrop) backdrop.classList.remove('hidden');
+        } else {
+          if (!sidebar.classList.contains(closedClass)) sidebar.classList.add(closedClass);
+          sidebar.dataset.state = 'closed';
+          sidebar.setAttribute('aria-hidden', 'true');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (backdrop) backdrop.classList.add('hidden');
+        }
+      }
+
+      // Initialize based on screen size
+      setSidebarOpen(lgQuery.matches);
+
+      toggle.addEventListener('click', function () {
+        var isClosed = sidebar.dataset.state !== 'open';
+        setSidebarOpen(isClosed);
+      });
+
+      if (backdrop) {
+        backdrop.addEventListener('click', function () { setSidebarOpen(false); });
+      }
+
+      lgQuery.addEventListener('change', function (e) {
+        if (e.matches) {
+          if (backdrop) backdrop.classList.add('hidden');
+          setSidebarOpen(true);
+        } else {
+          setSidebarOpen(false);
+        }
+      });
+    });
+  </script>
+
+  {% block script %}{% endblock %}
+</body>
+</html>
